@@ -102,18 +102,99 @@ module top(
     // 8 rows per char; 6 bits per scanline
     initial $readmemh("font.mem", font_rom);
 
-    (* ram_style = "block" *) reg [6:0] text_buffer [19169:0];  // 213*90
+    (* ram_style = "block" *) reg [10:0] text_buffer [19169:0];  // 213*90, 11-bit
     initial $readmemh("text_buffer.mem", text_buffer);
     
-    wire color_bit = font_rom[{text_buffer[text_row_offset + h_char_addr], v_count[2:0]}][h_pixel_cnt];
+    reg btnU_prev;
+    wire rising_btnU = btnU && ~btnU_prev;
+    
+    always @(posedge pix_clk)
+        if (h_count == 0 && v_count == 0)
+            btnU_prev <= btnU;
+
+    internal_signals signals();
+    internal_signals signals_reg();
+    
+    always_ff @(posedge pix_clk) begin
+        signals_reg.stall <= signals.stall;
+        signals_reg.regfile <= signals.regfile;
+        signals_reg.fetch_stage_pc <= signals.fetch_stage_pc;
+        signals_reg.if_id_instr <= signals.if_id_instr;
+        signals_reg.if_id_pc <= signals.if_id_pc;
+        signals_reg.id_operand_a <= signals.id_operand_a;
+        signals_reg.id_operand_b <= signals.id_operand_b;
+        signals_reg.id_read_rs1 <= signals.id_read_rs1;
+        signals_reg.id_read_rs2 <= signals.id_read_rs2;
+        signals_reg.id_write_en <= signals.id_write_en;
+        signals_reg.id_rd_src <= signals.id_rd_src;
+        signals_reg.id_jump <= signals.id_jump;
+        signals_reg.id_cjump <= signals.id_cjump;
+        signals_reg.id_mem_read <= signals.id_mem_read;
+        signals_reg.id_mem_write <= signals.id_mem_write;
+        signals_reg.id_pc_out <= signals.id_pc_out;
+        signals_reg.id_c_next_pc <= signals.id_c_next_pc;
+        signals_reg.id_instr <= signals.id_instr;
+        signals_reg.alu_result <= signals.alu_result;
+        signals_reg.funct <= signals.funct;
+        signals_reg.branch_taken <= signals.branch_taken;
+        signals_reg.flush_delay <= signals.flush_delay;
+        signals_reg.rs1_addr <= signals.rs1_addr;
+        signals_reg.rs2_addr <= signals.rs2_addr;
+        signals_reg.rd_addr <= signals.rd_addr;
+        signals_reg.rs1_val <= signals.rs1_val;
+        signals_reg.rs2_val <= signals.rs2_val;
+        signals_reg.ex_rd_addr <= signals.ex_rd_addr;
+        signals_reg.ex_instr <= signals.ex_instr;
+        signals_reg.ex_operand_a <= signals.ex_operand_a;
+        signals_reg.ex_operand_b <= signals.ex_operand_b;
+        signals_reg.ex_funct <= signals.ex_funct;
+        signals_reg.ex_branch_taken <= signals.ex_branch_taken;
+        signals_reg.ex_cjump <= signals.ex_cjump;
+        signals_reg.ex_c_next_pc <= signals.ex_c_next_pc;
+        signals_reg.ex_mem_read <= signals.ex_mem_read;
+        signals_reg.ex_mem_write <= signals.ex_mem_write;
+        signals_reg.ex_write_en <= signals.ex_write_en;
+        signals_reg.ex_rd_src <= signals.ex_rd_src;
+        signals_reg.ex_mem_wb_val <= signals.ex_mem_wb_val;
+        signals_reg.ex_mem_mem_data <= signals.ex_mem_mem_data;
+        signals_reg.ex_mem_address <= signals.ex_mem_address;
+        signals_reg.ex_mem_rd_addr <= signals.ex_mem_rd_addr;
+        signals_reg.wb_rd_addr <= signals.wb_rd_addr;
+        signals_reg.wb_en <= signals.wb_en;
+        signals_reg.wb_val <= signals.wb_val;
+        signals_reg.mem_wb_val <= signals.mem_wb_val;
+    end
+
+    core core_inst(
+        .clk(pix_clk),
+        .rst(rst),
+        .enable(h_count == 0 && v_count == 0 && (btnR || rising_btnU)),
+        .dbg(signals)
+    );
+
+    always @(posedge pix_clk)
+        led <= signals.regfile[1][15:0];
+
+    wire [10:0] char_full = text_buffer[text_row_offset + h_char_addr];
+    wire is_template = char_full[10];
+    wire [6:0] tmpl_id = char_full[9:3];
+    wire [2:0] tmpl_nib = char_full[2:0];
+    wire [31:0] signal_value;
+    id_case id_case_inst(.signals(signals_reg), .id(tmpl_id), .value(signal_value));
+    wire [3:0] nibble = signal_value[tmpl_nib*4 +: 4];
+    wire [7:0] hex_ascii = (nibble < 4'd10) ? (8'h30 + {4'b0, nibble})
+                                             : (8'h37 + {4'b0, nibble});
+    wire [7:0] char_idx = is_template ? hex_ascii : char_full[7:0];
+    wire color_bit = font_rom[{char_idx, v_count[2:0]}][h_pixel_cnt];
     
     always_ff @(posedge pix_clk) begin
         if (rst)
             vgaRed <= 4'b0;
-        else
+        else begin
             vgaRed <= display_en ? {4{color_bit}} : 4'h0;
             vgaGreen <= display_en ? {4{color_bit}} : 4'h0;
             vgaBlue <= display_en ? {4{color_bit}} : 4'h0;
+        end
     end
     
 endmodule

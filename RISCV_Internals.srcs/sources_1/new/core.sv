@@ -149,12 +149,17 @@ module core(
     reg [31:0] ex_instr;
 
     always_ff @(posedge clk) begin
-        if(rst || stall) begin
+        if(rst) begin
             ex_rd_addr <= 5'b0;
             ex_instr <= 32'b0;
         end else if (enable) begin
-            ex_rd_addr <= rd_addr;
-            ex_instr <= id_instr;
+            if (stall) begin
+                ex_rd_addr <= 5'b0;
+                ex_instr <= 32'b0;
+            end else begin
+                ex_rd_addr <= rd_addr;
+                ex_instr <= id_instr;
+            end
         end
     end
 

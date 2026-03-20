@@ -67,6 +67,8 @@ module id(
         mem_write <= 1'b0;
         rd_src <= 1'b0; // alu by default
         funct <= {instruction[30], instruction[14:12]};
+        pc_out <= 32'b0;
+        c_next_pc <= 32'b0;
 
         case(opcode)
             7'b00110011: begin // r-type

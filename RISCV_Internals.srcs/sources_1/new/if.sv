@@ -29,7 +29,8 @@ module ifs(
     output logic [31:0] instruction
     );
 
-    (* ram_style = "block" *) logic [31:0] mem [0:1023];
+    (* rom_style = "block" *) logic [31:0] mem [0:1023];
+    initial $readmemh("prog.mem", mem);
     
     always_ff @(posedge clk) begin
         if(rst)

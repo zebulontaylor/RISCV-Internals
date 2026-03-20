@@ -1,0 +1,392 @@
+{
+    "r0": {
+        "id": 1,
+        "size": 32,
+        "name": "regfile[0]"
+    },
+    "r1": {
+        "id": 2,
+        "size": 32,
+        "name": "regfile[1]"
+    },
+    "r2": {
+        "id": 3,
+        "size": 32,
+        "name": "regfile[2]"
+    },
+    "r3": {
+        "id": 4,
+        "size": 32,
+        "name": "regfile[3]"
+    },
+    "r4": {
+        "id": 5,
+        "size": 32,
+        "name": "regfile[4]"
+    },
+    "r5": {
+        "id": 6,
+        "size": 32,
+        "name": "regfile[5]"
+    },
+    "r6": {
+        "id": 7,
+        "size": 32,
+        "name": "regfile[6]"
+    },
+    "r7": {
+        "id": 8,
+        "size": 32,
+        "name": "regfile[7]"
+    },
+    "r8": {
+        "id": 9,
+        "size": 32,
+        "name": "regfile[8]"
+    },
+    "r9": {
+        "id": 10,
+        "size": 32,
+        "name": "regfile[9]"
+    },
+    "r10": {
+        "id": 11,
+        "size": 32,
+        "name": "regfile[10]"
+    },
+    "r11": {
+        "id": 12,
+        "size": 32,
+        "name": "regfile[11]"
+    },
+    "r12": {
+        "id": 13,
+        "size": 32,
+        "name": "regfile[12]"
+    },
+    "r13": {
+        "id": 14,
+        "size": 32,
+        "name": "regfile[13]"
+    },
+    "r14": {
+        "id": 15,
+        "size": 32,
+        "name": "regfile[14]"
+    },
+    "r15": {
+        "id": 16,
+        "size": 32,
+        "name": "regfile[15]"
+    },
+    "r16": {
+        "id": 17,
+        "size": 32,
+        "name": "regfile[16]"
+    },
+    "r17": {
+        "id": 18,
+        "size": 32,
+        "name": "regfile[17]"
+    },
+    "r18": {
+        "id": 19,
+        "size": 32,
+        "name": "regfile[18]"
+    },
+    "r19": {
+        "id": 20,
+        "size": 32,
+        "name": "regfile[19]"
+    },
+    "r20": {
+        "id": 21,
+        "size": 32,
+        "name": "regfile[20]"
+    },
+    "r21": {
+        "id": 22,
+        "size": 32,
+        "name": "regfile[21]"
+    },
+    "r22": {
+        "id": 23,
+        "size": 32,
+        "name": "regfile[22]"
+    },
+    "r23": {
+        "id": 24,
+        "size": 32,
+        "name": "regfile[23]"
+    },
+    "r24": {
+        "id": 25,
+        "size": 32,
+        "name": "regfile[24]"
+    },
+    "r25": {
+        "id": 26,
+        "size": 32,
+        "name": "regfile[25]"
+    },
+    "r26": {
+        "id": 27,
+        "size": 32,
+        "name": "regfile[26]"
+    },
+    "r27": {
+        "id": 28,
+        "size": 32,
+        "name": "regfile[27]"
+    },
+    "r28": {
+        "id": 29,
+        "size": 32,
+        "name": "regfile[28]"
+    },
+    "r29": {
+        "id": 30,
+        "size": 32,
+        "name": "regfile[29]"
+    },
+    "r30": {
+        "id": 31,
+        "size": 32,
+        "name": "regfile[30]"
+    },
+    "r31": {
+        "id": 32,
+        "size": 32,
+        "name": "regfile[31]"
+    },
+    "stall": {
+        "id": 33,
+        "size": 1,
+        "name": "stall"
+    },
+    "fetch_stage_pc": {
+        "id": 34,
+        "size": 32,
+        "name": "fetch_stage_pc"
+    },
+    "if_id_instr": {
+        "id": 35,
+        "size": 32,
+        "name": "if_id_instr"
+    },
+    "if_id_pc": {
+        "id": 36,
+        "size": 32,
+        "name": "if_id_pc"
+    },
+    "id_operand_a": {
+        "id": 37,
+        "size": 32,
+        "name": "id_operand_a"
+    },
+    "id_operand_b": {
+        "id": 38,
+        "size": 32,
+        "name": "id_operand_b"
+    },
+    "id_read_rs1": {
+        "id": 39,
+        "size": 1,
+        "name": "id_read_rs1"
+    },
+    "id_read_rs2": {
+        "id": 40,
+        "size": 1,
+        "name": "id_read_rs2"
+    },
+    "id_write_en": {
+        "id": 41,
+        "size": 1,
+        "name": "id_write_en"
+    },
+    "id_rd_src": {
+        "id": 42,
+        "size": 1,
+        "name": "id_rd_src"
+    },
+    "id_jump": {
+        "id": 43,
+        "size": 1,
+        "name": "id_jump"
+    },
+    "id_cjump": {
+        "id": 44,
+        "size": 1,
+        "name": "id_cjump"
+    },
+    "id_mem_read": {
+        "id": 45,
+        "size": 1,
+        "name": "id_mem_read"
+    },
+    "id_mem_write": {
+        "id": 46,
+        "size": 1,
+        "name": "id_mem_write"
+    },
+    "id_pc_out": {
+        "id": 47,
+        "size": 32,
+        "name": "id_pc_out"
+    },
+    "id_c_next_pc": {
+        "id": 48,
+        "size": 32,
+        "name": "id_c_next_pc"
+    },
+    "id_instr": {
+        "id": 49,
+        "size": 32,
+        "name": "id_instr"
+    },
+    "alu_result": {
+        "id": 50,
+        "size": 32,
+        "name": "alu_result"
+    },
+    "funct": {
+        "id": 51,
+        "size": 4,
+        "name": "funct"
+    },
+    "branch_taken": {
+        "id": 52,
+        "size": 1,
+        "name": "branch_taken"
+    },
+    "flush_delay": {
+        "id": 53,
+        "size": 1,
+        "name": "flush_delay"
+    },
+    "rs1_addr": {
+        "id": 54,
+        "size": 5,
+        "name": "rs1_addr"
+    },
+    "rs2_addr": {
+        "id": 55,
+        "size": 5,
+        "name": "rs2_addr"
+    },
+    "rd_addr": {
+        "id": 56,
+        "size": 5,
+        "name": "rd_addr"
+    },
+    "rs1_val": {
+        "id": 57,
+        "size": 32,
+        "name": "rs1_val"
+    },
+    "rs2_val": {
+        "id": 58,
+        "size": 32,
+        "name": "rs2_val"
+    },
+    "ex_rd_addr": {
+        "id": 59,
+        "size": 5,
+        "name": "ex_rd_addr"
+    },
+    "ex_instr": {
+        "id": 60,
+        "size": 32,
+        "name": "ex_instr"
+    },
+    "ex_operand_a": {
+        "id": 61,
+        "size": 32,
+        "name": "ex_operand_a"
+    },
+    "ex_operand_b": {
+        "id": 62,
+        "size": 32,
+        "name": "ex_operand_b"
+    },
+    "ex_funct": {
+        "id": 63,
+        "size": 4,
+        "name": "ex_funct"
+    },
+    "ex_branch_taken": {
+        "id": 64,
+        "size": 1,
+        "name": "ex_branch_taken"
+    },
+    "ex_cjump": {
+        "id": 65,
+        "size": 1,
+        "name": "ex_cjump"
+    },
+    "ex_mem_read": {
+        "id": 66,
+        "size": 1,
+        "name": "ex_mem_read"
+    },
+    "ex_mem_write": {
+        "id": 67,
+        "size": 1,
+        "name": "ex_mem_write"
+    },
+    "ex_write_en": {
+        "id": 68,
+        "size": 1,
+        "name": "ex_write_en"
+    },
+    "ex_rd_src": {
+        "id": 69,
+        "size": 1,
+        "name": "ex_rd_src"
+    },
+    "ex_c_next_pc": {
+        "id": 70,
+        "size": 32,
+        "name": "ex_c_next_pc"
+    },
+    "ex_mem_wb_val": {
+        "id": 71,
+        "size": 32,
+        "name": "ex_mem_wb_val"
+    },
+    "ex_mem_mem_data": {
+        "id": 72,
+        "size": 32,
+        "name": "ex_mem_mem_data"
+    },
+    "ex_mem_address": {
+        "id": 73,
+        "size": 32,
+        "name": "ex_mem_address"
+    },
+    "ex_mem_rd_addr": {
+        "id": 74,
+        "size": 5,
+        "name": "ex_mem_rd_addr"
+    },
+    "wb_rd_addr": {
+        "id": 75,
+        "size": 5,
+        "name": "wb_rd_addr"
+    },
+    "wb_en": {
+        "id": 76,
+        "size": 1,
+        "name": "wb_en"
+    },
+    "wb_val": {
+        "id": 77,
+        "size": 32,
+        "name": "wb_val"
+    },
+    "mem_wb_val": {
+        "id": 78,
+        "size": 32,
+        "name": "mem_wb_val"
+    }
+}

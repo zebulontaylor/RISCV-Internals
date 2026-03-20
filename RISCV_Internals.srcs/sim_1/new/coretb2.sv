@@ -99,7 +99,9 @@ module coretb2();
         core_inst.ifs_inst.mem[7]  = i_add(5'd1, 5'd1, 12'd1);           // 1C: ADDI x1, x1, 1    -> x1 = x1*3+1
         core_inst.ifs_inst.mem[8]  = i_add(5'd2, 5'd2, 12'd1);           // 20: ADDI x2, x2, 1    -> next_iter: steps++
         core_inst.ifs_inst.mem[9]  = jal(5'd0, -21'd36);                 // 24: JAL x0, -36       -> loop back to PC=0
-        core_inst.ifs_inst.mem[10] = nop();                              // 28: NOP               -> end
+        for (int i = 10; i < 1024; i++) begin
+            core_inst.ifs_inst.mem[i] = nop();
+        end
 
         // Reset the core
         rst = 1'b1;
