@@ -63,6 +63,12 @@ module core(
     input clk,
     input rst,
     input enable,
+
+    input [31:0] oam_addr,
+    input [31:0] palette_addr,
+    output [31:0] oam_data,
+    output [35:0] palette_data,
+    
     internal_signals.src dbg
 );
     wire stall;
@@ -173,6 +179,7 @@ module core(
     reg ex_mem_write;
     reg ex_write_en;
     reg ex_rd_src;
+    reg [31:0] ex_rs2_val;
 
 
     always @(posedge clk) begin
@@ -196,6 +203,7 @@ module core(
             ex_mem_write <= id_mem_write;
             ex_write_en <= id_write_en;
             ex_rd_src <= id_rd_src;
+            ex_rs2_val <= rs2_val;
         end
     end
 
@@ -226,7 +234,7 @@ module core(
             ex_mem_rd_addr <= ex_rd_addr;
             ex_mem_rd_src <= ex_rd_src;
             ex_mem_wb_val <= alu_result;
-            ex_mem_mem_data <= rs2_val;
+            ex_mem_mem_data <= ex_rs2_val;
             ex_mem_mem_read <= ex_mem_read;
             ex_mem_mem_write <= ex_mem_write;
         end
@@ -241,7 +249,11 @@ module core(
         .read_en(ex_mem_mem_read & enable),
         .address(ex_mem_wb_val),
         .data_in(ex_mem_mem_data),
-        .data_out(mem_wb_val)
+        .data_out(mem_wb_val),
+        .oam_addr(oam_addr),
+        .palette_addr(palette_addr),
+        .oam_data(oam_data),
+        .palette_data(palette_data)
     );
 
     reg [4:0] wb_rd_addr;

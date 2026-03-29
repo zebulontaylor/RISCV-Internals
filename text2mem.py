@@ -88,6 +88,10 @@ def render_layout(text, signals):
     
     def build_layout(node):
         ratio = int(node.attrib.get('ratio', 1))
+        size = node.attrib.get('size')
+        if size is not None:
+            size = int(size)
+            
         name = node.attrib.get('name', node.tag)
         
         if node.tag.lower() == 'panel':
@@ -98,9 +102,9 @@ def render_layout(text, signals):
             if title:
                 renderable = Panel(renderable, title=title, expand=True)
                 
-            return Layout(renderable, name=name, ratio=ratio)
+            return Layout(renderable, name=name, ratio=ratio, size=size)
             
-        layout = Layout(name=name, ratio=ratio)
+        layout = Layout(name=name, ratio=ratio, size=size)
         children_layouts = [build_layout(child) for child in node]
         
         if node.tag.lower() == 'row':
@@ -123,7 +127,9 @@ def render_layout(text, signals):
                     main_layout.split_column(*[build_layout(child) for child in root])
                 console.print(main_layout)
             except ET.ParseError as e:
-                console.print(f"XML Parse Error: {e}")
+                import sys
+                sys.stderr.write(f"XML Parse Error in input markdown: {e}\n")
+                sys.exit(1)
         elif "=== COLUMN ===" in processed_text:
             parts = [p.strip() for p in processed_text.split("=== COLUMN ===")]
             renderables = []
@@ -227,6 +233,10 @@ def main():
             row = rows[r] if r < len(rows) else []
             for c in range(COLS):
                 val = row[c] if c < len(row) else FILL
+                # Hard mask the top-right text to pure spaces (0x20) for the 480p CPU area!
+                # Since 107 cols x 60 rows perfectly overlays 640x480 hardware pixels.
+                if r < 60 and c >= 106:
+                    val = 0x20
                 f.write(f"{val:03X}\n")
 
     total = ROWS * COLS

@@ -226,7 +226,7 @@ module coretb();
         // decoded next cycle, executed next, memory next, WB next = 5 cycles.
         // But because the same instruction re-executes every cycle, we give it
         // enough time and just check the final regfile state.
-        repeat(8) @(posedge clk);
+        repeat(5) @(posedge clk);
 
         actual = core_inst.regfile[check_rd];
         if (actual === expected) begin
