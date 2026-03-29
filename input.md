@@ -11,24 +11,40 @@
             <Row>
                 <!-- Registers (Exact 35 cols wide) -->
                 <Panel title="Registers" size="35">
-| Reg | Value   | Reg | Value   |
-|-----|---------|-----|---------|
-| r0  | {{r0}}  | r16 | {{r16}} | 
-| r1  | {{r1}}  | r17 | {{r17}} | 
-| r2  | {{r2}}  | r18 | {{r18}} | 
-| r3  | {{r3}}  | r19 | {{r19}} | 
-| r4  | {{r4}}  | r20 | {{r20}} | 
-| r5  | {{r5}}  | r21 | {{r21}} | 
-| r6  | {{r6}}  | r22 | {{r22}} | 
-| r7  | {{r7}}  | r23 | {{r23}} | 
-| r8  | {{r8}}  | r24 | {{r24}} |
-| r9  | {{r9}}  | r25 | {{r25}} |
-| r10 | {{r10}} | r26 | {{r26}} |
-| r11 | {{r11}} | r27 | {{r27}} |
-| r12 | {{r12}} | r28 | {{r28}} |
-| r13 | {{r13}} | r29 | {{r29}} |
-| r14 | {{r14}} | r30 | {{r30}} |
-| r15 | {{r15}} | r31 | {{r31}} |
+| Reg | Value   |
+|-----|---------|
+| r0  | {{r0}}  |
+| r1  | {{r1}}  |
+| r2  | {{r2}}  |
+| r3  | {{r3}}  |
+| r4  | {{r4}}  |
+| r5  | {{r5}}  |
+| r6  | {{r6}}  |
+| r7  | {{r7}}  |
+| r8  | {{r8}}  |
+| r9  | {{r9}}  |
+| r10 | {{r10}} |
+| r11 | {{r11}} |
+| r12 | {{r12}} |
+| r13 | {{r13}} |
+| r14 | {{r14}} |
+| r15 | {{r15}} |
+| r16 | {{r16}} |
+| r17 | {{r17}} |
+| r18 | {{r18}} |
+| r19 | {{r19}} |
+| r20 | {{r20}} |
+| r21 | {{r21}} |
+| r22 | {{r22}} |
+| r23 | {{r23}} |
+| r24 | {{r24}} |
+| r25 | {{r25}} |
+| r26 | {{r26}} |
+| r27 | {{r27}} |
+| r28 | {{r28}} |
+| r29 | {{r29}} |
+| r30 | {{r30}} |
+| r31 | {{r31}} |
                 </Panel>
 
                 <!-- Pipeline Display (Remaining 71 cols wide) -->
@@ -109,8 +125,23 @@
 
             <!-- Bottom Right Menu: remaining 30 rows -->
             <Row>
-                <Panel title="System Status and Extras">
-                    <!-- Additional information can go here -->
+                <Panel title="RISC-V Quick Reference (RV32I)">
+**Instruction Formats**
+| Type | 31 .. 25 | 24 .. 20 | 19 .. 15 | 14 .. 12 | 11 .. 7 | 6 .. 0 |
+|---|---|---|---|---|---|---|
+| **R** | funct7       | rs2 | rs1 | funct3 | rd | opcode |
+| **I** | imm[11:0]    |     | rs1 | funct3 | rd | opcode |
+| **S** | imm[11:5]    | rs2 | rs1 | funct3 | imm[4:0] | opcode |
+| **B** | imm[12\|10:5]| rs2 | rs1 | funct3 | imm[4:1\|11] | opcode |
+| **U** | imm[31:12]   |     |     |        | rd | opcode |
+| **J** | imm[20\|10:1\|11\|19:12] | | |        | rd | opcode |
+
+**Common Opcodes**
+| Opcode  | Type | Desc     | Opcode  | Type | Desc   | Opcode  | Type | Desc     |
+|---------|------|----------|---------|------|--------|---------|------|----------|
+| 0110011 | R    | ALU Ops  | 0000011 | I    | Loads  | 1100011 | B    | Branches |
+| 0010011 | I    | ALU Imm  | 0100011 | S    | Stores | 1101111 | J    | JAL      |
+| 0110111 | U    | LUI      | 0010111 | U    | AUIPC  | 1100111 | I    | JALR     |
                 </Panel>
             </Row>
 
