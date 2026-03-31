@@ -167,7 +167,7 @@ module coretb();
         input int    cycles
     );
         // Load instruction into fetch-stage instruction memory
-        core_inst.ifs_inst.mem[0] = instr;
+        core_inst.mem_inst.ram[0] = instr;
         // Assert reset for two cycles
         rst = 1'b1;
         @(posedge clk); @(posedge clk);
@@ -184,7 +184,7 @@ module coretb();
     );
         int i;
         for (i = 0; i < instrs.size(); i++)
-            core_inst.ifs_inst.mem[i] = instrs[i];
+            core_inst.mem_inst.ram[i] = instrs[i];
         rst = 1'b1;
         @(posedge clk); @(posedge clk);
         rst = 1'b0;
@@ -211,7 +211,7 @@ module coretb();
         test_num++;
 
         // Load instruction and reset
-        core_inst.ifs_inst.mem[0] = instr;
+        core_inst.mem_inst.ram[0] = instr;
         rst = 1'b1;
         @(posedge clk); @(posedge clk);
         rst = 1'b0;
@@ -253,7 +253,7 @@ module coretb();
         int i;
         test_num++;
 
-        core_inst.ifs_inst.mem[0] = instr;
+        core_inst.mem_inst.ram[0] = instr;
         rst = 1'b1;
         @(posedge clk); @(posedge clk);
         rst = 1'b0;
@@ -462,8 +462,8 @@ module coretb();
         // LW x1, 0(x0): Pre-load data memory at address 0 with 0xCAFEBABE
         begin
             test_num++;
-            core_inst.ifs_inst.mem[0] = load_word(5'd1, 5'd0, 12'd0);
-            core_inst.mem_inst.mem[0] = 32'hCAFEBABE;
+            core_inst.mem_inst.ram[0] = load_word(5'd1, 5'd0, 12'd1);
+            core_inst.mem_inst.ram[1] = 32'hCAFEBABE;
             rst = 1'b1;
             @(posedge clk); @(posedge clk);
             rst = 1'b0;
@@ -483,18 +483,18 @@ module coretb();
             test_num++;
             // We can only execute one instruction (the one at imem[0]).
             // So test SW alone: seed x2=0xBEEFBEEF, store to dmem[0], check dmem directly.
-            core_inst.ifs_inst.mem[0] = store_word(5'd0, 5'd2, 12'd0);
+            core_inst.mem_inst.ram[0] = store_word(5'd0, 5'd2, 12'd0);
             rst = 1'b1;
             @(posedge clk); @(posedge clk);
             rst = 1'b0;
             seed_reg(5'd2, 32'hBEEFBEEF);
             repeat(10) @(posedge clk);
-            if (core_inst.mem_inst.mem[0] === 32'hBEEFBEEF) begin
+            if (core_inst.mem_inst.ram[0] === 32'hBEEFBEEF) begin
                 $display("  [PASS] Test %0d: SW x2, 0(x0) → dmem[0] = 0xBEEFBEEF", test_num);
                 pass_count++;
             end else begin
                 $display("  [FAIL] Test %0d: SW x2, 0(x0) → dmem[0] = 0x%08h, expected 0xBEEFBEEF",
-                         test_num, core_inst.mem_inst.mem[0]);
+                         test_num, core_inst.mem_inst.ram[0]);
                 fail_count++;
             end
         end
@@ -502,8 +502,8 @@ module coretb();
         // LW with offset: LW x1, 8(x0) → loads dmem[2]
         begin
             test_num++;
-            core_inst.ifs_inst.mem[0] = load_word(5'd1, 5'd0, 12'd8);
-            core_inst.mem_inst.mem[2] = 32'h12345678;
+            core_inst.mem_inst.ram[0] = load_word(5'd1, 5'd0, 12'd8);
+            core_inst.mem_inst.ram[2] = 32'h12345678;
             rst = 1'b1;
             @(posedge clk); @(posedge clk);
             rst = 1'b0;

@@ -127,6 +127,7 @@ module id(
                 write_en <= is_enabled;
                 jump <= is_enabled;
                 pc_out <= pc_in + immJ;
+                funct <= 4'b0;
             end
             7'b0110111: begin // LUI
                 operand_a <= immU;

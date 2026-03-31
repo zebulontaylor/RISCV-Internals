@@ -1,7 +1,13 @@
 `timescale 1ns / 1ps
 
-// Replicates FPGA enable pattern: enable is high for exactly 1 clock
-// cycle per "frame" (every FRAME_CLOCKS cycles).
+// Minimal testbench: exercises soft_mul / soft_div / soft_mod only.
+// Loads test_math.mem, waits for the sentinel word (results[15] == 0xDEAD),
+// then checks the 8 expected results written into the results[] array.
+//
+// results[] base: byte 0x3FC  ->  word index 0xFF (255)
+// results[n]    : word index 255 + n
+// sentinel      : results[15] = word index 270
+
 module coretb4();
 
     logic clk;
@@ -9,8 +15,11 @@ module coretb4();
 
     internal_signals dbg_if();
 
-    // Simulate frame-based enable (1 cycle per FRAME_CLOCKS)
-    localparam FRAME_CLOCKS = 5;  // much shorter than real 1650*750, but same pattern
+    // Tie off OAM/palette ports (not needed for this test)
+    wire [31:0] oam_data_nc;
+    wire [35:0] pal_data_nc;
+
+    localparam FRAME_CLOCKS = 5;
     int cycle_count;
     wire enable = (cycle_count == 0);
 
@@ -18,7 +27,11 @@ module coretb4();
         .clk(clk),
         .rst(rst),
         .enable(enable),
-        .dbg(dbg_if)
+        .dbg(dbg_if),
+        .oam_addr(32'b0),
+        .palette_addr(32'b0),
+        .oam_data(oam_data_nc),
+        .palette_data(pal_data_nc)
     );
 
     always #5 clk = ~clk;
@@ -30,38 +43,80 @@ module coretb4();
             cycle_count <= (cycle_count == FRAME_CLOCKS - 1) ? 0 : cycle_count + 1;
     end
 
+    // -----------------------------------------------------------------------
+    // Expected results (must match test_math.c)
+    // -----------------------------------------------------------------------
+    // -----------------------------------------------------------------------
+    // Expected results (must match test_math.c)
+    // -----------------------------------------------------------------------
+    localparam int EXPECTED [0:13] = '{
+        42,       // 0: soft_mul(6, 7)
+        -45,      // 1: soft_mul(-5, 9)
+        25,       // 2: soft_div(100, 4)
+        -33,      // 3: soft_div(-99, 3)
+        2,        // 4: soft_mod(17, 5)
+        2,        // 5: soft_mod(100, 7)
+        3329050,  // 6: soft_mul(1664525, 2)
+        9,        // 7: soft_div(99, 10)
+        3,        // 8: arr[0]
+        206,      // 9: arr[29]
+        7,        // 10: arr[14] - arr[13]
+        100,      // 11: sum (100)
+        100,      // 12: load-use (100)
+        999       // 13: cell (999)
+    };
+
+    localparam RESULTS_WORD_BASE = 301; // 0x4B4 >> 2
+    localparam SENTINEL_WORD     = 332; // 301 + 31
+    localparam SENTINEL_VAL      = 32'h0000DEAD;
+
+    // -----------------------------------------------------------------------
+    // Declare all variables at top for SV tool compatibility
+    int pass, fail, got, expected;
+
     initial begin
         clk = 1'b0;
         rst = 1'b1;
+        pass = 0; fail = 0;
+
         @(posedge clk);
         @(posedge clk);
         rst = 1'b0;
 
-        // Give it enough frames for Collatz(27) = 111 steps + stall overhead
-        // Each step needs ~5 enable cycles (instruction + stalls), so ~600 frames
-        // At FRAME_CLOCKS=100, that's 60000 cycles
-        repeat(100000) @(posedge clk);
+        // Poll for sentinel (results[31] == 0xDEAD), timeout after 5M cycles.
+        begin
+            int timeout_cnt;
+            timeout_cnt = 0;
+            while (core_inst.mem_inst.ram[SENTINEL_WORD] !== SENTINEL_VAL) begin
+                @(posedge clk);
+                timeout_cnt = timeout_cnt + 1;
+                if (timeout_cnt >= 5_000_000) begin
+                    $display("[TIMEOUT] Sentinel never appeared after %0d cycles. PC=0x%08X",
+                             timeout_cnt, core_inst.fetch_stage_pc);
+                    $finish;
+                end
+            end
+        end
 
+        // --- Report ---
         $display("========================================");
-        $display("  coretb4: Collatz with intermittent enable");
-        $display("  (enable pattern: 1 cycle per %0d)", FRAME_CLOCKS);
-        $display("========================================");
-        $display("  x1 = %0d (0x%08X)", core_inst.regfile[1], core_inst.regfile[1]);
-        $display("  x2 = %0d (0x%08X)", core_inst.regfile[2], core_inst.regfile[2]);
-        $display("  x3 = %0d (0x%08X)", core_inst.regfile[3], core_inst.regfile[3]);
-        $display("  PC = 0x%08X", core_inst.fetch_stage_pc);
+        $display("  coretb4: Detailed Math & Memory Test");
         $display("========================================");
 
-        if (core_inst.regfile[1] === 32'd1)
-            $display("[PASS] x1 reached 1");
-        else
-            $display("[FAIL] x1 = %0d, expected 1", core_inst.regfile[1]);
+        for (int i = 0; i < 14; i++) begin
+            got      = $signed(core_inst.mem_inst.ram[RESULTS_WORD_BASE + i]);
+            expected = EXPECTED[i];
+            if (got === expected) begin
+                $display("  [PASS] results[%2d] = %6d", i, got);
+                pass++;
+            end else begin
+                $display("  [FAIL] results[%2d] = %6d, expected %6d", i, got, expected);
+                fail++;
+            end
+        end
 
-        if (core_inst.regfile[2] === 32'd111)
-            $display("[PASS] x2 = 111 steps");
-        else
-            $display("[FAIL] x2 = %0d, expected 111 steps", core_inst.regfile[2]);
-
+        $display("----------------------------------------");
+        $display("  %0d passed, %0d failed", pass, fail);
         $display("========================================");
         $finish;
     end

@@ -81,6 +81,8 @@ module core(
 
     wire [31:0] if_id_instr;
     wire [31:0] if_id_pc;
+    wire [31:0] fetch_pc_wire;
+    wire [31:0] fetch_instr_wire;
 
     ifs ifs_inst(
         .clk(clk),
@@ -88,7 +90,9 @@ module core(
         .stall(stall || ~enable),
         .pc_in(fetch_stage_pc),
         .pc_out(if_id_pc),
-        .instruction(if_id_instr)
+        .instruction(if_id_instr),
+        .mem_instruction(fetch_instr_wire),
+        .fetch_pc(fetch_pc_wire)
     );
 
     // DECODE
@@ -124,8 +128,8 @@ module core(
     wire [4:0] rd_addr = if_id_instr[11:7];
     
     // Regfile reads
-    wire [31:0] rs1_val = regfile[rs1_addr];
-    wire [31:0] rs2_val = regfile[rs2_addr];
+    wire [31:0] rs1_val = (wb_en && wb_rd_addr != 5'd0 && wb_rd_addr == rs1_addr) ? wb_val : regfile[rs1_addr];
+    wire [31:0] rs2_val = (wb_en && wb_rd_addr != 5'd0 && wb_rd_addr == rs2_addr) ? wb_val : regfile[rs2_addr];
 
 
     id id_inst(
@@ -250,6 +254,8 @@ module core(
         .address(ex_mem_wb_val),
         .data_in(ex_mem_mem_data),
         .data_out(mem_wb_val),
+        .pc(fetch_pc_wire),
+        .instruction(fetch_instr_wire),
         .oam_addr(oam_addr),
         .palette_addr(palette_addr),
         .oam_data(oam_data),
@@ -258,13 +264,20 @@ module core(
 
     reg [4:0] wb_rd_addr;
     reg wb_en;
-    reg [31:0] wb_val;
+    reg wb_rd_src;
+    reg [31:0] wb_alu_result;
+    wire [31:0] wb_val;
 
     always_ff @(posedge clk) begin
-        if(rst)
+        if(rst) begin
             wb_rd_addr <= 5'b0;
-        else if (enable)
+            wb_rd_src <= 1'b0;
+            wb_alu_result <= 32'b0;
+        end else if (enable) begin
             wb_rd_addr <= ex_mem_rd_addr;
+            wb_rd_src <= ex_mem_rd_src;
+            wb_alu_result <= ex_mem_wb_val;
+        end
     end
 
     always_ff @(posedge clk) begin
@@ -272,9 +285,10 @@ module core(
             wb_en <= 1'b0;
         else if (enable) begin
             wb_en <= ex_mem_write_en;
-            wb_val <= ex_mem_rd_src ? mem_wb_val : ex_mem_wb_val;
         end
     end
+
+    assign wb_val = wb_rd_src ? mem_wb_val : wb_alu_result;
 
     // WB
     always_ff @(posedge clk) begin

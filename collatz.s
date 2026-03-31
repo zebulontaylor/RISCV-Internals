@@ -32,15 +32,15 @@ odd:
     jal  x0, loop
 
 collatz_done:
-    # Setup Palette 0 (White/Red)
-    addi x4, x0, 1024       # 0x400
+    # Setup Palette 0 (White/Red) at 0x400000
+    lui  x4, 0x400       # x4 = 0x400000
     lui  x5, 0x00F01
-    addi x5, x5, -1         # 0x00F00FFF
+    addi x5, x5, -1      # 0x00F00FFF
     sw   x5, 0(x4)
 
-    # Setup Palette 1 (Green/Blue)
+    # Setup Palette 1 (Green/Blue) at 0x400004
     lui  x5, 0x0000F
-    addi x5, x5, 240        # 0x0000F0F0
+    addi x5, x5, 240     # 0x0000F0F0
     sw   x5, 4(x4)
 
     # Sprite state initialization
@@ -56,6 +56,9 @@ collatz_done:
 
     addi x28, x0, 624  # max_x (640 - 16)
     addi x29, x0, 464  # max_y (480 - 16)
+
+    # x18 = OAM base = 0x800000
+    lui  x18, 0x800
 
 anim_loop:
     # Update s0_x
@@ -84,15 +87,14 @@ s0_bounce_y_bottom:
     addi x13, x0, -1
 s0_y_done:
 
-    # Pack and write Sprite 0
+    # Pack and write Sprite 0 to OAM[0] at 0x800000
     # oam_sprite_data = (palette << 26) | (tile << 19) | (v_pos << 10) | h_pos
     # palette=0, tile=1 => 1 << 19 = 0x80000
     lui x5, 0x00080      # 0x00080000
     slli x6, x11, 10
     add x5, x5, x6
     add x5, x5, x10
-    addi x4, x0, 512
-    sw x5, 0(x4)
+    sw x5, 0(x18)        # OAM[0]
 
     # Update s1_x
     add x14, x14, x16
@@ -120,14 +122,13 @@ s1_bounce_y_bottom:
     addi x17, x0, -1
 s1_y_done:
 
-    # Pack and write Sprite 1
+    # Pack and write Sprite 1 to OAM[1] at 0x800004
     # palette=1, tile=2 => (1 << 26) | (2 << 19) = 0x04000000 | 0x00100000 = 0x04100000
     lui x5, 0x04100      # 0x04100000
     slli x6, x15, 10
     add x5, x5, x6
     add x5, x5, x14
-    addi x4, x0, 512
-    sw x5, 4(x4)
+    sw x5, 4(x18)        # OAM[1]
 
     # Delay loop to slow down animation
     lui x6, 0x00020      # adjust as needed
