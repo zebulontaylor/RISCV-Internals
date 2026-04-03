@@ -5,3 +5,7 @@
 *.runs
 *.sim
 obj_dir
+.agents
+sim
+RISCV_Internals.xpr
+RISCV_Internals.srcs/utils_1/imports/synth_1/top.dcp

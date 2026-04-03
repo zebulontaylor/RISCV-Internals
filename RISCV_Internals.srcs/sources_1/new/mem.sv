@@ -47,7 +47,7 @@ module mem(
     (* ram_style = "block" *) reg [31:0] oam_mem [0:127];
     (* ram_style = "block" *) reg [35:0] palette_mem [0:15];
 
-    initial $readmemh("prog.mem", ram);
+    initial $readmemh("mem/prog.mem", ram);
 
     // Address decode: high bits determine region
     wire is_oam_addr     = address[23];

@@ -100,10 +100,10 @@ module top(
     
     (* rom_style = "block" *) reg [5:0] font_rom [2047:0];
     // 8 rows per char; 6 bits per scanline
-    initial $readmemh("font.mem", font_rom);
+    initial $readmemh("mem/font.mem", font_rom);
 
     (* ram_style = "block" *) reg [10:0] text_buffer [19169:0];  // 213*90, 11-bit
-    initial $readmemh("text_buffer.mem", text_buffer);
+    initial $readmemh("mem/text_buffer.mem", text_buffer);
     
     reg btnU_prev;
     wire rising_btnU = btnU && ~btnU_prev;
