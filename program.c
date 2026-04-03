@@ -90,7 +90,7 @@ uint32_t my_rand() {
     return seed;
 }
 
-#define NUM_BOIDS 18
+#define NUM_BOIDS 32
 
 // Main program entry point
 int main() {

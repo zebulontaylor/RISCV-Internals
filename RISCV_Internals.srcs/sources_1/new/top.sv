@@ -176,7 +176,7 @@ module top(
     core core_inst(
         .clk(pix_clk),
         .rst(rst),
-        .enable((h_count == 0 && v_count == 0 && (btnR || rising_btnU)) || btnD),
+        .enable((h_count == 0 && v_count == 0 && (btnR || rising_btnU)) || btnD || sw[15]),
         .dbg(signals),
         .oam_addr(oam_sprite_index),
         .oam_data(oam_sprite_data),
