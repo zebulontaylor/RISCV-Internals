@@ -2,6 +2,10 @@
 
 This project is an FPGA implementation of a RISCV processor that visualizes its internal state on a VGA display.
 
+## AI Usage Disclosure
+
+I used AI for the generation of testbenches (`*tb.sv`) and for most of the files in `tools/` or `sw/`. I did not use AI for the generation of the core or top level modules.
+
 ## Setup
 
 Starter `.mem` files are already generated in the `mem/` directory. To generate new ones, use the following commands:
